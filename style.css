@@ -459,3 +459,35 @@ textarea { height: 120px; resize: vertical; }
   width: 100% !important;
   height: 100% !important;
 }
+
+/* Mobile Camera Pixel Mapping Fix */
+#reader-wrapper {
+  width: 100% !important;
+  max-width: 480px !important;
+  margin: 15px auto !important;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+#reader {
+  width: 100% !important;
+  border: none !important;
+}
+
+#reader video {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 60vh !important;
+  object-fit: contain !important; /* Prevents aspect ratio distortion on Android Chrome */
+  display: block !important;
+}
+
+/* Hide library overheadUI */
+#reader__scan_region {
+  background: transparent !important;
+}
+
+#reader__dashboard {
+  display: none !important;
+}
