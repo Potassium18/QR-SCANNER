@@ -627,42 +627,53 @@ if ('serviceWorker' in navigator) {
       .catch((err) => console.error('Service Worker Registration failed:', err));
   });
 }
-// Optimized Mobile Camera Scanner Configuration
-const cameraConfig = {
-  fps: 15, // Smooth frame rate for mobile rendering
+
+// Enhanced Mobile QR Scanner Configuration
+const html5QrcodeScanner = new Html5Qrcode("reader");
+
+const mobileQrConfig = {
+  fps: 20, // Faster frame rate for mobile responsiveness
   qrbox: (viewfinderWidth, viewfinderHeight) => {
-    // Dynamic sizing: 70% of screen width on mobile, capped at 250px
+    // Dynamic sizing: Ensures box fits comfortably on narrow phone screens
     const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-    return {
-      width: Math.floor(minEdge * 0.7),
-      height: Math.floor(minEdge * 0.7)
-    };
+    const boxSize = Math.floor(minEdge * 0.75);
+    return { width: boxSize, height: boxSize };
   },
-  aspectRatio: 1.0
+  aspectRatio: 1.0,
+  // Enable advanced detection engines for mobile
+  experimentalFeatures: {
+    useBarCodeDetectorIfSupported: true
+  }
 };
 
-// Start camera stream specifically using back camera with focus constraints
-function startMobileScanner(html5QrCodeScanner) {
-  const constraints = {
-    facingMode: { exact: "environment" }, // Forces main rear camera
-    width: { min: 640, ideal: 1280, max: 1920 },
-    height: { min: 480, ideal: 720, max: 1080 },
-    focusMode: "continuous"
+function startMobileCamera() {
+  // Mobile Camera Constraints: Requests rear camera with optimal resolution & auto-focus
+  const cameraConstraints = {
+    facingMode: "environment",
+    width: { min: 640, ideal: 1280 },
+    height: { min: 480, ideal: 720 }
   };
 
-  html5QrCodeScanner.start(
-    { facingMode: "environment" }, // Fallback if exact constraints fail
-    cameraConfig,
-    onScanSuccess,
-    onScanFailure
+  html5QrcodeScanner.start(
+    cameraConstraints,
+    mobileQrConfig,
+    (decodedText, decodedResult) => {
+      // Trigger success handler
+      if (typeof handleNewScan === "function") {
+        handleNewScan(decodedText);
+      }
+    },
+    (errorMessage) => {
+      // Ignore frame read errors during active search
+    }
   ).catch(err => {
-    console.warn("Exact environment camera failed, falling back to default camera:", err);
-    // Fallback for devices without 'environment' facingMode naming
-    html5QrCodeScanner.start(
+    console.warn("Primary rear camera failed, switching to default fallback:", err);
+    // Secondary fallback for devices without facingMode mapping
+    html5QrcodeScanner.start(
       { facingMode: "user" },
-      cameraConfig,
-      onScanSuccess,
-      onScanFailure
+      mobileQrConfig,
+      (decodedText) => handleNewScan(decodedText),
+      () => {}
     );
   });
 }
