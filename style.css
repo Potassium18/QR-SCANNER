@@ -429,3 +429,10 @@ textarea { height: 120px; resize: vertical; }
     font-size: 1.2rem;
   }
 }
+/* Prevent QR video feed distortion on mobile screens */
+#reader video, #qr-reader video {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: cover !important;
+  border-radius: 8px;
+}
