@@ -1,0 +1,21 @@
+{
+  "name": "QR Attendance App",
+  "short_name": "Attendance",
+  "description": "Offline QR Code Attendance Tracker & Scanner",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#2e7d32",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3388/3388614.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3388/3388614.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes - QR Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h2>Menu</h2>
+      <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item"><span class="icon">📷</span> SCANNER</a>
+      <a href="notes.html" class="nav-item active"><span class="icon">📝</span> NOTE</a>
+      <a href="settings.html" class="nav-item"><span class="icon">⚙️</span> SETTINGS</a>
+    </nav>
+  </aside>
+
+  <!-- TOP HEADER MENU -->
+  <div class="main-wrapper">
+    <header class="top-bar">
+      <button class="menu-btn" onclick="toggleSidebar()">☰ Menu</button>
+      <span id="status-badge" class="status-badge offline">Offline</span>
+    </header>
+
+  <!-- MAIN NOTES & ATTENDANCE CONTENT -->
+<main class="content-container" style="max-width: 650px; margin: 0 auto; padding: 15px;">
+  
+  <!-- Header & Actions -->
+  <div class="notes-header">
+    <h2>Simple Notes</h2>
+    <div class="header-actions">
+      <button onclick="promptNewFolder()" title="Add Folder" class="icon-btn">📁+</button>
+      <button onclick="toggleNoteModal()" title="Add Note" class="icon-btn primary-btn">+ Note</button>
+    </div>
+  </div>
+
+  <!-- Folders Filter Bar -->
+  <div class="section-label">Folders</div>
+  <div id="folders-grid" class="folders-grid">
+    <!-- Folder items render here dynamically -->
+  </div>
+
+  <!-- Pinned Notes Section -->
+  <div id="pinned-section" class="notes-group hidden">
+    <div class="section-label">📌 Pinned Notes</div>
+    <div id="pinned-notes-grid" class="notes-grid"></div>
+  </div>
+
+  <!-- Regular Notes Section -->
+  <div class="notes-group">
+    <div class="section-label" id="main-notes-label">Personal Notes</div>
+    <div id="notes-grid" class="notes-grid"></div>
+  </div>
+
+  <hr style="margin: 25px 0; border: none; border-top: 1px solid #e0e0e0;" />
+
+  <!-- DEDICATED SCANNED DATA / ATTENDANCE LIST SECTION -->
+  <div class="scanned-data-section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="section-label" style="margin: 0;">📋 SCANNED DATA (Attendance Logs)</div>
+      <button onclick="clearScannedLogs()" class="danger-btn" style="padding: 4px 8px; font-size: 0.75rem;">Clear Scans</button>
+    </div>
+
+    <div class="attendance-table-wrapper" style="margin-top: 10px; overflow-x: auto;">
+      <table id="scanned-logs-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <thead>
+          <tr style="background-color: #f5f5f5; text-align: left; border-bottom: 2px solid #ddd;">
+            <th style="padding: 8px 10px;">Time</th>
+            <th style="padding: 8px 10px;">Name / QR Info</th>
+            <th style="padding: 8px 10px; text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="scanned-logs-body">
+          <!-- Attendance scanned rows render here dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+  <!-- MODAL FOR CREATING / EDITING NOTES -->
+  <div id="note-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Create Note</h3>
+      <input type="text" id="note-title-input" placeholder="Title" />
+      <textarea id="note-content-input" rows="4" placeholder="Write something..."></textarea>
+      
+      <div class="modal-options">
+        <label>Folder:
+          <select id="note-folder-select"></select>
+        </label>
+        <label>Color:
+          <input type="color" id="note-color-input" value="#e3f2fd" />
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button onclick="toggleNoteModal()" class="secondary-btn">Cancel</button>
+        <button onclick="saveCustomNote()" class="primary-btn">Save Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT FILES -->
+  <script src="app.js"></script> 
+  <script src="notes.js"></script>
+
+</body>
+</html>

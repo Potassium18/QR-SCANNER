@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div id="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h2>Menu</h2>
+      <button class="close-btn" onclick="toggleSidebar()">&times;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="nav-item"><span class="icon">📷</span> SCANNER</a>
+      <a href="notes.html" class="nav-item"><span class="icon">📝</span> NOTE</a>
+      <a href="settings.html" class="nav-item active"><span class="icon">⚙️</span> SETTINGS</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-wrapper">
+    <header class="top-bar">
+      <button class="menu-btn" onclick="toggleSidebar()">☰ Menu</button>
+<span id="status-badge" class="status-badge offline">Offline</span>
+    </header>
+
+    <main class="content-container">
+      <div class="card">
+        <h2>Account Settings</h2>
+        <div class="setting-item">
+          <label for="account-name">Operator Name / Account:</label>
+          <input type="text" id="account-name" placeholder="e.g., Block Rep / Admin Name">
+        </div>
+        <button class="primary-btn" onclick="saveAccountInfo()">Save Account Info</button>
+      </div>
+
+      <div class="card" style="margin-top: 15px;">
+        <h2>Google Script URL Management</h2>
+        
+        <div class="setting-item">
+          <label for="url-presets">Saved Presets:</label>
+          <select id="url-presets" onchange="loadSelectedPreset()">
+            <option value="">-- Select a saved URL --</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label for="preset-name-input">Preset Label / Name:</label>
+          <input type="text" id="preset-name-input" placeholder="e.g., ATTENDANCE SHEET, DAY 1">
+        </div>
+
+        <div class="setting-item">
+          <label for="script-url-input">Google Web App URL:</label>
+          <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/.../exec">
+        </div>
+
+        <div class="button-group" style="display: flex; gap: 10px; margin-top: 10px;">
+          <button class="primary-btn" style="flex: 1;" onclick="saveAndRenameUrl()">Save & Label URL</button>
+          <button class="danger-btn" style="flex: 1;" onclick="deleteSelectedPreset()">Delete Preset</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 15px;">
+        <h2>Data Queue</h2>
+        <button class="danger-btn" onclick="clearQueueData()">Clear Offline Queue</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

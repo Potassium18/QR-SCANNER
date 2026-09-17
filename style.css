@@ -1,0 +1,431 @@
+:root {
+  --primary: #2e7d32;
+  --primary-hover: #1b5e20;
+  --bg: #d9dbdc;
+  --card-bg: #ffffff;
+  --text: #333333;
+  --border: #e0e0e0;
+  --sidebar-width: 250px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: calc(-1 * var(--sidebar-width));
+  width: var(--sidebar-width);
+  height: 100%;
+  background-color: #1e293b;
+  color: #ffffff;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open { left: 0; }
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  padding: 15px 20px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: #334155;
+  color: #ffffff;
+}
+
+/* Overlay */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  z-index: 999;
+}
+
+#overlay.active { display: block; }
+
+/* Main Layout */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.top-bar, .app-header {
+  background-color: #ffffff;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.menu-btn {
+  background-color: #f1f5f9;
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Status Badge with Smooth Transitions */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Smooth color, background, and subtle scale transition */
+  transition: background-color 0.4s ease, color 0.4s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  will-change: background-color, color, transform;
+}
+
+/* Online State */
+.status-badge.online { 
+  background-color: #dcfce7; 
+  color: #15803d;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.25);
+}
+
+/* Offline State */
+.status-badge.offline { 
+  background-color: #fee2e2; 
+  color: #b91c1c;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.25);
+}
+
+.content-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.setting-item label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+textarea, input[type="text"], select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+textarea { height: 120px; resize: vertical; }
+
+.primary-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.danger-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.hidden { display: none !important; }
+
+.queue-banner {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.last-scanned {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+/* ==========================================
+   NOTES & FOLDERS RESPONSIVE LAYOUT
+   ========================================== */
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.icon-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.section-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #777;
+  text-transform: uppercase;
+  margin: 15px 0 8px;
+}
+
+/* Dynamic Responsive Grids */
+.folders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.folder-card {
+  background: #f0f0f0;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.1s ease;
+}
+
+.folder-card:hover { transform: scale(0.98); }
+.folder-card.active { border: 2px solid #333; }
+
+.note-card {
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 110px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  position: relative;
+  word-break: break-word;
+}
+
+.note-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #444;
+  white-space: pre-line;
+}
+
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.card-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* ==========================================
+   SCANNED DATA TABLE (RESPONSIVE WRAPPER)
+   ========================================== */
+.scanned-data-section {
+  margin-top: 20px;
+}
+
+.attendance-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-top: 10px;
+}
+
+#scanned-logs-table {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: collapse;
+}
+
+#scanned-logs-table th, 
+#scanned-logs-table td {
+  padding: 10px 12px;
+  text-align: left;
+}
+
+/* Modal Popup */
+.modal {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 15px;
+}
+
+.modal.hidden { display: none; }
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  max-height: 500px;
+}
+
+.modal-content input[type="text"], .modal-content textarea, .modal-content select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal-options {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ==========================================
+   MEDIA QUERIES (MOBILE BREAKPOINTS)
+   ========================================== */
+@media screen and (max-width: 480px) {
+  .content-container {
+    padding: 12px;
+  }
+
+  .folders-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #scanned-logs-table th, 
+  #scanned-logs-table td {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+
+  .notes-header h2 {
+    font-size: 1.2rem;
+  }
+}
