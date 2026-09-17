@@ -436,3 +436,26 @@ textarea { height: 120px; resize: vertical; }
   object-fit: cover !important;
   border-radius: 8px;
 }
+
+/* Fix mobile video/canvas feed scaling and alignment */
+#reader {
+  width: 100% !important;
+  max-width: 500px;
+  margin: 0 auto;
+  border: none !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 12px;
+}
+
+/* Ensure scanner canvas element matches video dimensions */
+#reader canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
