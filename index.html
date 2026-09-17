@@ -43,8 +43,6 @@
 <div class="card">
   <h2>QR Scanner</h2>
   <!-- Clean scanner wrapper inside index.html -->
-<div id="reader-wrapper" style="width: 100%; max-width: 480px; margin: 0 auto;">
-  <div id="reader"></div>
 
   <div class="camera-select-group">
     <label for="camera-select">Select Camera:</label>
@@ -52,6 +50,10 @@
     <button id="toggle-scan-btn" class="primary-btn" style="margin-top: 8px;" onclick="toggleScanning()">Start Scanning</button>
   </div>
 
+  <!-- SCANNER WRAPPER INTEGRATION -->
+        <div id="reader-wrapper" style="width: 100%; max-width: 480px; margin: 15px auto 0; border-radius: 12px; overflow: hidden; background: #000;">
+          <div id="reader"></div>
+        </div>
   <!-- Updated Viewport with Video and Tracker Canvas -->
   <div class="scanner-viewport" style="position: relative; width: 100%; max-width: 600px; margin: 15px auto 0; background: #000; border-radius: 8px; overflow: hidden;">
     <video id="webcam" autoplay playsinline muted style="width: 100%; display: block;"></video>
