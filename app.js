@@ -627,3 +627,42 @@ if ('serviceWorker' in navigator) {
       .catch((err) => console.error('Service Worker Registration failed:', err));
   });
 }
+// Optimized Mobile Camera Scanner Configuration
+const cameraConfig = {
+  fps: 15, // Smooth frame rate for mobile rendering
+  qrbox: (viewfinderWidth, viewfinderHeight) => {
+    // Dynamic sizing: 70% of screen width on mobile, capped at 250px
+    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+    return {
+      width: Math.floor(minEdge * 0.7),
+      height: Math.floor(minEdge * 0.7)
+    };
+  },
+  aspectRatio: 1.0
+};
+
+// Start camera stream specifically using back camera with focus constraints
+function startMobileScanner(html5QrCodeScanner) {
+  const constraints = {
+    facingMode: { exact: "environment" }, // Forces main rear camera
+    width: { min: 640, ideal: 1280, max: 1920 },
+    height: { min: 480, ideal: 720, max: 1080 },
+    focusMode: "continuous"
+  };
+
+  html5QrCodeScanner.start(
+    { facingMode: "environment" }, // Fallback if exact constraints fail
+    cameraConfig,
+    onScanSuccess,
+    onScanFailure
+  ).catch(err => {
+    console.warn("Exact environment camera failed, falling back to default camera:", err);
+    // Fallback for devices without 'environment' facingMode naming
+    html5QrCodeScanner.start(
+      { facingMode: "user" },
+      cameraConfig,
+      onScanSuccess,
+      onScanFailure
+    );
+  });
+}
