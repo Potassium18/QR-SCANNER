@@ -1,24 +1,7 @@
 // ==========================================
-// GLOBAL VARIABLES & INITIALIZATION
-// ==========================================
+// Global Scanner Reference
 let html5QrCode = null;
 let isScanning = false;
-const ACTIVE_SCRIPT_URL = localStorage.getItem("google_script_url") || "";
-
-// ==========================================
-// CAMERA SCANNER ENGINE (MOBILE OPTIMIZED)
-// ==========================================
-async function toggleScanning() {
-  const btn = document.getElementById("toggle-scan-btn");
-
-  if (isScanning) {
-    stopScanner();
-    if (btn) btn.textContent = "Start Scanning";
-    return;
-  }
-
-  startScanner();
-}
 
 async function startScanner() {
   const btn = document.getElementById("toggle-scan-btn");
@@ -26,36 +9,53 @@ async function startScanner() {
 
   try {
     if (!html5QrCode) {
-      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode = new Html5Qrcode("reader", /* verbose= */ false);
     }
 
-    // Get available cameras for dropdown population
+    // Request permissions and get physical camera list
     const devices = await Html5Qrcode.getCameras();
-    if (devices && devices.length > 0 && cameraSelect && cameraSelect.children.length === 0) {
+    
+    if (!devices || devices.length === 0) {
+      alert("No cameras detected. Please ensure camera permissions are allowed in Chrome/Android settings.");
+      return;
+    }
+
+    // Populate Camera Dropdown
+    if (cameraSelect && cameraSelect.children.length === 0) {
       cameraSelect.innerHTML = "";
-      devices.forEach(device => {
+      devices.forEach((device, index) => {
         const option = document.createElement("option");
         option.value = device.id;
-        option.textContent = device.label || `Camera ${cameraSelect.children.length + 1}`;
+        // Prioritize main back camera labeling on Realme/Tecno devices
+        option.textContent = device.label || `Camera ${index + 1}`;
         cameraSelect.appendChild(option);
       });
     }
 
-    // Mobile-optimized scan configuration
+    // Find the primary rear camera ID (avoiding ultra-wide lenses)
+    let selectedDeviceId = cameraSelect && cameraSelect.value ? cameraSelect.value : null;
+    
+    if (!selectedDeviceId) {
+      const backCamera = devices.find(d => 
+        d.label.toLowerCase().includes("back") || 
+        d.label.toLowerCase().includes("rear") ||
+        d.label.toLowerCase().includes("0") // Usually primary camera index
+      );
+      selectedDeviceId = backCamera ? backCamera.id : devices[devices.length - 1].id;
+    }
+
+    // Robust Mobile Camera Configuration
     const scanConfig = {
-      fps: 10, // Gives mobile camera sensors time to continuous auto-focus
-      qrbox: undefined, // Scans whole video frame so alignment isn't rigid
-      aspectRatio: 1.0,
-      experimentalFeatures: {
-        useBarCodeDetectorIfSupported: true // Uses native OS hardware acceleration if available
+      fps: 15,
+      qrbox: undefined, // Scans full camera feed so framing bounds don't reject codes
+      videoConstraints: {
+        deviceId: { exact: selectedDeviceId },
+        focusMode: "continuous"
       }
     };
 
-    const selectedCameraId = cameraSelect && cameraSelect.value ? cameraSelect.value : null;
-    const cameraConstraint = selectedCameraId ? selectedCameraId : { facingMode: "environment" };
-
     await html5QrCode.start(
-      cameraConstraint,
+      selectedDeviceId,
       scanConfig,
       onScanSuccess,
       onScanFailure
@@ -65,40 +65,24 @@ async function startScanner() {
     if (btn) btn.textContent = "Stop Scanning";
 
   } catch (err) {
-    console.error("Camera startup error:", err);
-    alert("Camera access failed. Please ensure HTTPS is active and camera permissions are allowed.");
-    if (btn) btn.textContent = "Start Scanning";
-    isScanning = false;
-  }
-}
-
-async function stopScanner() {
-  if (html5QrCode && isScanning) {
+    console.warn("Exact camera startup failed, attempting generic environment fallback...", err);
+    
+    // Universal Fallback for Tecno / Android Go budget hardware
     try {
-      await html5QrCode.stop();
-      isScanning = false;
-    } catch (err) {
-      console.error("Failed to stop scanner cleanly:", err);
+      await html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10 },
+        onScanSuccess,
+        onScanFailure
+      );
+      isScanning = true;
+      if (btn) btn.textContent = "Stop Scanning";
+    } catch (fallbackErr) {
+      console.error("Critical camera access error:", fallbackErr);
+      alert("Camera error: Ensure you are accessing this site via HTTPS (https://) and camera permissions are granted.");
     }
   }
 }
-
-// ==========================================
-// SCAN SUCCESS & PARSING
-// ==========================================
-function onScanSuccess(decodedText, decodedResult) {
-  // Prevent duplicate accidental scans within 2 seconds
-  stopScanner();
-  const btn = document.getElementById("toggle-scan-btn");
-  if (btn) btn.textContent = "Start Scanning";
-
-  handleNewScan(decodedText);
-}
-
-function onScanFailure(error) {
-  // Silent frame parse error handler
-}
-
 function handleNewScan(qrCodeMessage) {
   try {
     const now = new Date();
