@@ -628,52 +628,61 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Enhanced Mobile QR Scanner Configuration
-const html5QrcodeScanner = new Html5Qrcode("reader");
+// Initialize HTML5 QR Code Scanner
+let html5QrCode = null;
 
-const mobileQrConfig = {
-  fps: 20, // Faster frame rate for mobile responsiveness
-  qrbox: (viewfinderWidth, viewfinderHeight) => {
-    // Dynamic sizing: Ensures box fits comfortably on narrow phone screens
-    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-    const boxSize = Math.floor(minEdge * 0.75);
-    return { width: boxSize, height: boxSize };
-  },
-  aspectRatio: 1.0,
-  // Enable advanced detection engines for mobile
-  experimentalFeatures: {
-    useBarCodeDetectorIfSupported: true
-  }
-};
-
-function startMobileCamera() {
-  // Mobile Camera Constraints: Requests rear camera with optimal resolution & auto-focus
-  const cameraConstraints = {
-    facingMode: "environment",
-    width: { min: 640, ideal: 1280 },
-    height: { min: 480, ideal: 720 }
-  };
-
-  html5QrcodeScanner.start(
-    cameraConstraints,
-    mobileQrConfig,
-    (decodedText, decodedResult) => {
-      // Trigger success handler
-      if (typeof handleNewScan === "function") {
-        handleNewScan(decodedText);
-      }
-    },
-    (errorMessage) => {
-      // Ignore frame read errors during active search
+async function startMobileScanner() {
+  try {
+    if (html5QrCode) {
+      try { await html5QrCode.stop(); } catch (e) {}
     }
-  ).catch(err => {
-    console.warn("Primary rear camera failed, switching to default fallback:", err);
-    // Secondary fallback for devices without facingMode mapping
-    html5QrcodeScanner.start(
-      { facingMode: "user" },
-      mobileQrConfig,
-      (decodedText) => handleNewScan(decodedText),
-      () => {}
+
+    html5QrCode = new Html5Qrcode("reader");
+
+    // Camera video & scanning configuration tailored for mobile sensors
+    const scanConfig = {
+      fps: 10, // Lowering FPS gives mobile web browsers time to auto-focus each frame
+      // Passing undefined to qrbox allows scanning across the entire screen feed
+      qrbox: undefined, 
+      videoConstraints: {
+        facingMode: { ideal: "environment" }, // Prioritizes main rear lens
+        width: { min: 640, ideal: 1280, max: 1920 },
+        height: { min: 480, ideal: 720, max: 1080 }
+      }
+    };
+
+    // Start streaming directly
+    await html5QrCode.start(
+      { facingMode: "environment" },
+      scanConfig,
+      (decodedText, decodedResult) => {
+        // Successful QR scan detection
+        if (typeof handleNewScan === "function") {
+          handleNewScan(decodedText);
+        }
+      },
+      (errorMessage) => {
+        // Frame parse failures (keep scanning silently)
+      }
     );
-  });
+  } catch (err) {
+    console.warn("Environment camera failed. Trying default camera fallback...", err);
+    
+    // Fallback if environment camera naming is restricted by OS
+    try {
+      await html5QrCode.start(
+        { facingMode: "user" },
+        { fps: 10 },
+        (decodedText) => handleNewScan(decodedText),
+        () => {}
+      );
+    } catch (fallbackErr) {
+      console.error("Unable to access camera on this mobile device:", fallbackErr);
+    }
+  }
 }
+
+// Automatically trigger camera startup when page loads
+document.addEventListener("DOMContentLoaded", () => {
+  startMobileScanner();
+});
